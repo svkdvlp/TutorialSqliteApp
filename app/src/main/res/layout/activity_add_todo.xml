@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.svk.tutorialapplication.AddTodoActivity">
+    tools:context="com.svk.tutorialapplication.AddUpdateTodoActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -65,11 +65,10 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/btn_addjob"
+                android:id="@+id/btn_add_update_job"
                 android:layout_marginTop="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/addtodo_btn_str"
                 android:textColor="@android:color/white"
                 android:layout_gravity="center_horizontal"
                 android:backgroundTint="@color/colorAccent"/>
