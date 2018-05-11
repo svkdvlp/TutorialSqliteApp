@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.svk.tutorialapplication.AddTodoActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/edt_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/title_hint_str"
+                android:textColor="@android:color/black"
+                android:lines="1"
+                android:maxLength="20"
+                android:text=""/>
+
+            <EditText
+                android:id="@+id/edt_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/description_hint_str"
+                android:textColor="@android:color/black"
+                android:lines="5"
+                android:maxLength="200"
+                android:gravity="top"
+                android:text=""/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_picktime"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:hint="@string/timepick_hint_str"
+                    android:textColor="@android:color/black"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                    android:padding="8dp"
+                    android:gravity="center_vertical"
+                    android:layout_weight="1"/>
+
+                <ImageView
+                    android:id="@+id/iv_picktime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:padding="8dp"
+                    android:tint="@color/colorPrimaryDark"
+                    android:src="@drawable/ic_action_timeevent"/>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_addjob"
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/addtodo_btn_str"
+                android:textColor="@android:color/white"
+                android:layout_gravity="center_horizontal"
+                android:backgroundTint="@color/colorAccent"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

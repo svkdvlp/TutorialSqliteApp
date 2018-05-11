@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">TutorialApplication</string>
+
+    <string name="title_hint_str">Title</string>
+    <string name="description_hint_str">Description</string>
+    <string name="timepick_hint_str">Select Notify Time</string>
+    <string name="addtodo_btn_str">Add Job</string>
+</resources>
