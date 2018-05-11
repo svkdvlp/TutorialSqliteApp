@@ -26,21 +26,23 @@ import static com.svk.tutorialapplication.utils.AppUtils.getformattedTimeString;
 import static com.svk.tutorialapplication.utils.AppUtils.isTimeValid;
 import static com.svk.tutorialapplication.utils.AppUtils.showToast;
 
-public class AddTodoActivity extends AppCompatActivity implements View.OnClickListener {
+public class AddUpdateTodoActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static final String TAG = AddTodoActivity.class.getSimpleName();
+    public static final String TAG = AddUpdateTodoActivity.class.getSimpleName();
 
-    ToDoDatabaseHelper mToDoDatabaseHelper;
+    private ToDoDatabaseHelper mToDoDatabaseHelper;
 
-    Button btn_addjob;
-    EditText edt_title,edt_desc;
-    TextView tv_picktime;
-    ImageView iv_picktime;
+    private Button btn_add_update_job;
+    private EditText edt_title,edt_desc;
+    private TextView tv_picktime;
+    private ImageView iv_picktime;
 
-    Context mContext;
-    String titleStr, descStr, timeStr;
-    Calendar cal;
-    long selectedTimeMillis;
+    private Context mContext;
+    private String titleStr, descStr, timeStr;
+    private Calendar cal;
+    private long selectedTimeMillis;
+
+    private int item_id = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +52,26 @@ public class AddTodoActivity extends AppCompatActivity implements View.OnClickLi
         bindViews();
 
         init();
+
+        TodoModel todoModel = (TodoModel) getIntent().getSerializableExtra("todo_model");
+        if(todoModel != null) {
+            getSupportActionBar().setTitle("Update Job");
+            btn_add_update_job.setText("UPDATE JOB");
+            item_id = todoModel.getId();
+            edt_title.setText(todoModel.getTitle());
+            edt_desc.setText(todoModel.getDescription());
+            selectedTimeMillis = todoModel.getNotifyTime();
+            tv_picktime.setText(getformattedTimeString(todoModel.getNotifyTime()));
+        }
+        else {
+            getSupportActionBar().setTitle("Add Job");
+            btn_add_update_job.setText("ADD JOB");
+        }
+
     }
 
     private void bindViews() {
-        btn_addjob = findViewById(R.id.btn_addjob);
+        btn_add_update_job = findViewById(R.id.btn_add_update_job);
         edt_title = findViewById(R.id.edt_title);
         edt_desc = findViewById(R.id.edt_desc);
         tv_picktime = findViewById(R.id.tv_picktime);
@@ -63,7 +81,7 @@ public class AddTodoActivity extends AppCompatActivity implements View.OnClickLi
     private void init() {
         mContext = this;
         mToDoDatabaseHelper = ToDoDatabaseHelper.getInstance(getApplicationContext());
-        btn_addjob.setOnClickListener(this);
+        btn_add_update_job.setOnClickListener(this);
         iv_picktime.setOnClickListener(this);
         titleStr = descStr = timeStr = "";
         selectedTimeMillis = 0L;
@@ -73,10 +91,14 @@ public class AddTodoActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.btn_addjob:
+            case R.id.btn_add_update_job:
                 titleStr = edt_title.getText().toString().trim();
                 descStr = edt_desc.getText().toString().trim();
-                saveToDoJob(titleStr,descStr);
+
+                if(item_id != -1)
+                    updateJob(titleStr,descStr);
+                else
+                    saveToDoJob(titleStr,descStr);
                 break;
             case R.id.iv_picktime:
                 showPickTimeDialog();
@@ -84,6 +106,25 @@ public class AddTodoActivity extends AppCompatActivity implements View.OnClickLi
             default:
                 Log.e(TAG, "onClick: "+ "some problem" );
         }
+    }
+
+    private void updateJob(String titleStr, String descStr) {
+        //Validation
+        if(titleStr.equals("")){
+            showToast(mContext,"Please enter some title");
+            return;
+        }else if(descStr.equals("")){
+            showToast(mContext,"Please enter some description");
+            return;
+        }else if(selectedTimeMillis <= 0L){
+            showToast(mContext,"Please enter notify time");
+            return;
+        }
+
+        TodoModel item = new TodoModel(item_id, titleStr, descStr, selectedTimeMillis);
+        int effected_rows = mToDoDatabaseHelper.updateJob(item);
+        setResult(RESULT_OK);
+        finish();
     }
 
     private void saveToDoJob(String titleStr, String descStr) {
