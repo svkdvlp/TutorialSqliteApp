@@ -11,8 +11,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.svk.tutorialapplication.alarmutils.AlarmHelper;
 import com.svk.tutorialapplication.databaseutils.ToDoDatabaseHelper;
 import com.svk.tutorialapplication.databaseutils.models.TodoModel;
+import com.svk.tutorialapplication.utils.AppUtils;
 
 import java.util.ArrayList;
 
@@ -44,22 +46,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         todoItemsAdapter.setOnListItemActionListener(new TodoItemsAdapter.OnListItemActionListener() {
             @Override
             public void onEditSelected(TodoModel todoModel) {
-                //Toast.makeText(mContext, ""+todoModel.getId(), Toast.LENGTH_SHORT).show();
                 gotoAddUpdateTodoActivity(todoModel);
             }
 
             @Override
-            public void onDeleteSelected(int item_id) {
-                //Toast.makeText(mContext, ""+item_id, Toast.LENGTH_SHORT).show();
-                deleteJobItem(item_id);
+            public void onDeleteSelected(int item_id, String item_title) {
+                deleteJobItem(item_id,item_title);
             }
         });
     }
 
-    private void deleteJobItem(int item_id) {
+    private void deleteJobItem(int item_id, String item_title) {
         int rows_effected = mToDoDatabaseHelper.deleteJobItem(item_id);
         if(rows_effected > 0) {
+            AlarmHelper.deleteJobAlarm(mContext,item_id,item_title);
+            AppUtils.showToast(mContext,"successfully deleted"+ rows_effected);
             updateTodoListUI();
+        }else{
+            Log.e(TAG, "deleteJobItem: " + " Some problem");
         }
     }
 
@@ -121,7 +125,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             todoModelArrayList.clear();
             todoModelArrayList.addAll(list);
             todoItemsAdapter.notifyDataSetChanged();
+        }else{
+            todoModelArrayList.clear();
+            todoItemsAdapter.notifyDataSetChanged();
         }
     }
-
 }

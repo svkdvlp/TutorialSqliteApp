@@ -8,7 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.svk.tutorialapplication.alarmutils.AlarmHelper;
 import com.svk.tutorialapplication.alarmutils.AlarmReceiver;
 import com.svk.tutorialapplication.databaseutils.ToDoDatabaseHelper;
 import com.svk.tutorialapplication.databaseutils.models.TodoModel;
@@ -29,6 +32,8 @@ import static com.svk.tutorialapplication.utils.AppUtils.showToast;
 public class AddUpdateTodoActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String TAG = AddUpdateTodoActivity.class.getSimpleName();
+
+    Toolbar toolbar;
 
     private ToDoDatabaseHelper mToDoDatabaseHelper;
 
@@ -56,6 +61,7 @@ public class AddUpdateTodoActivity extends AppCompatActivity implements View.OnC
         TodoModel todoModel = (TodoModel) getIntent().getSerializableExtra("todo_model");
         if(todoModel != null) {
             getSupportActionBar().setTitle("Update Job");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             btn_add_update_job.setText("UPDATE JOB");
             item_id = todoModel.getId();
             edt_title.setText(todoModel.getTitle());
@@ -65,6 +71,7 @@ public class AddUpdateTodoActivity extends AppCompatActivity implements View.OnC
         }
         else {
             getSupportActionBar().setTitle("Add Job");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             btn_add_update_job.setText("ADD JOB");
         }
 
@@ -86,6 +93,16 @@ public class AddUpdateTodoActivity extends AppCompatActivity implements View.OnC
         titleStr = descStr = timeStr = "";
         selectedTimeMillis = 0L;
         cal = Calendar.getInstance();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -123,6 +140,9 @@ public class AddUpdateTodoActivity extends AppCompatActivity implements View.OnC
 
         TodoModel item = new TodoModel(item_id, titleStr, descStr, selectedTimeMillis);
         int effected_rows = mToDoDatabaseHelper.updateJob(item);
+        if(effected_rows>0){
+            AlarmHelper.deleteJobAlarm(mContext,item_id,titleStr);
+        }
         setResult(RESULT_OK);
         finish();
     }
@@ -145,14 +165,19 @@ public class AddUpdateTodoActivity extends AppCompatActivity implements View.OnC
 
         TodoModel item = new TodoModel(titleStr,descStr,selectedTimeMillis);
         int id = mToDoDatabaseHelper.addJob(item);
-        //setJobAlarm(selectedTimeMillis,id);
+        //setJobAlarm(selectedTimeMillis,id,titleStr);
+        AlarmHelper.setJobAlarm(mContext,selectedTimeMillis,id,titleStr);
         setResult(RESULT_OK);
         finish();
     }
 
-    private void setJobAlarm(long selectedTimeMillis, int reqCode) {
+    /*private void setJobAlarm(long selectedTimeMillis, int reqCode, String titleStr) {
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
         Intent myIntent = new Intent(mContext, AlarmReceiver.class);
+        myIntent.putExtra(KEY_JOB_TITLE,titleStr);
+        myIntent.putExtra(KEY_JOB_id,reqCode);
+
         PendingIntent  pendingIntent = PendingIntent.getBroadcast(mContext, reqCode, myIntent, 0);
         try {
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, selectedTimeMillis, pendingIntent);
@@ -160,7 +185,7 @@ public class AddUpdateTodoActivity extends AppCompatActivity implements View.OnC
             e.printStackTrace();
             showToast(mContext, "Alarm set error");
         }
-    }
+    }*/
 
     private void showPickTimeDialog() {
         // Get Current Time

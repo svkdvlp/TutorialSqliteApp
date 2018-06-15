@@ -84,7 +84,7 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.Item
 
                             case 1 : //Delete option
                                 if(onListItemActionListener != null)
-                                    onListItemActionListener.onDeleteSelected(todoModel.getId());
+                                    onListItemActionListener.onDeleteSelected(todoModel.getId(),todoModel.getTitle());
                                 break;
                         }
                     }
@@ -101,7 +101,7 @@ public class TodoItemsAdapter extends RecyclerView.Adapter<TodoItemsAdapter.Item
 
     public interface OnListItemActionListener {
         void onEditSelected(TodoModel todoModel);
-        void onDeleteSelected(int item_id);
+        void onDeleteSelected(int item_id, String item_title);
     }
 
     public void setOnListItemActionListener(OnListItemActionListener listener) {
